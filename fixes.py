@@ -25,6 +25,9 @@ def sort_seealso(man):
     xrs = [xr[:-2] if xr.endswith(" ,") else xr for xr in xrs]
     xrs = [xr[:-2] if xr.endswith(" .") else xr for xr in xrs]
 
+    # Eliminate any duplicate lines.
+    xrs = list(set(xrs))
+
     # Sort according to the order that mandoc wants:
     #   1) ascending by man section
     #   2) ascending by manpage name, case insensitive
