@@ -5,6 +5,7 @@
 import argparse
 
 import fixes
+import lint
 import man_file
 
 
@@ -12,6 +13,8 @@ def parse_args():
     """ Parse the command-line arguments. """
     parser = argparse.ArgumentParser(
                  description="Fix some elements of man files")
+    parser.add_argument("--lint", action="store_true",
+                        help="Run checks without fixing anything")
     parser.add_argument("-f", "--filenames-list",
                         help="A file containing a list of man pages to fix")
     parser.add_argument("filenames", nargs="*",
@@ -43,8 +46,11 @@ def main():
     # Apply fixes to all those files.
     for filename in filenames:
         man = man_file.ManFile(filename)
-        fixes.sort_seealso(man)
-        man.save()
+        if args.lint:
+            lint.check_spdx(man)
+        else:
+            fixes.sort_seealso(man)
+            man.save()
 
 
 if __name__ == "__main__":

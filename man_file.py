@@ -24,6 +24,20 @@ class ManFile:
         with open(self.filename, "w", encoding="utf-8") as fp:
             fp.write(text)
 
+    def get_preamble(self):
+        """ Get the commented-out lines at the beginning of the file. """
+        index = None
+        for i, line in enumerate(self.lines):
+            if not line.startswith(".\\"):
+                index = i
+                break
+        if index:
+            preamble = self.lines[:index]
+        else:
+            preamble = []
+
+        return preamble
+
     def get_section(self, section_name):
         """ Get a section of the man page. """
         self.section["name"] = section_name
