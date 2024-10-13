@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """ Handle boilerplate for dealing with man files. """
 
 

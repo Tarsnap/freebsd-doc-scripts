@@ -22,6 +22,7 @@ if [ ! -e man-pages.txt ]; then
 							\
 		":(exclude)bin/sh/tests/"		\
 		":(exclude)share/doc/usd/04.csh/"	\
+		":(exclude)share/man/man4/iwlwififw.4"	\
 		":(exclude)usr.bin/bmake/tests/"	\
 		":(exclude)usr.bin/sed/tests/"		\
 		":(exclude)usr.sbin/cxgbetool/cxgbetool.8"	\
