@@ -6,6 +6,7 @@ class ManFile:
     def __init__(self, filename):
         self.filename = filename
         self.lines = None
+        self.modified = False
         self.section = {}
         self._section_reset()
 
@@ -19,10 +20,17 @@ class ManFile:
         self.section["after"] = []
 
     def save(self):
-        """ Write the man page back to disk. """
+        """ If it was modified, write the man page back to disk. """
+        if not self.modified:
+            return
+
         text = "\n".join(self.lines) + "\n"
         with open(self.filename, "w", encoding="utf-8") as fp:
             fp.write(text)
+
+    def is_modified(self):
+        """ Was the file modified? """
+        return self.modified
 
     def get_preamble(self):
         """ Get the commented-out lines at the beginning of the file. """
@@ -65,6 +73,9 @@ class ManFile:
         """
         # Sanity check
         assert section_name == self.section["name"]
+
+        if lines != self.section["middle"]:
+            self.modified = True
 
         self.lines = self.section["before"] + lines + self.section["after"]
         self._section_reset()
