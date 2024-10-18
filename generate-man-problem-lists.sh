@@ -24,6 +24,7 @@ if [ ! -e man-pages.txt ]; then
 		":(exclude)sys/contrib/"			\
 		":(exclude)sys/crypto/"				\
 								\
+		":(exclude)cddl/contrib/"			\
 		":(exclude)usr.bin/clang/"			\
 		":(exclude)usr.sbin/ntp/doc/ntp*"		\
 		":(exclude)usr.sbin/ntp/doc/sntp.8"		\
@@ -31,6 +32,7 @@ if [ ! -e man-pages.txt ]; then
 		":(exclude)bin/sh/tests/"			\
 		":(exclude)usr.bin/bmake/tests/"		\
 		":(exclude)usr.bin/sed/tests/"			\
+		":(exclude)share/examples/ipfilter/"		\
 								\
 		":(exclude)share/doc/usd/04.csh/"		\
 		":(exclude)share/man/man4/iwlwififw.4"		\

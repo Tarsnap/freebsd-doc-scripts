@@ -1,1 +1,4 @@
+# Development files
+/devel-tools/
+# Build output
 __pycache__
