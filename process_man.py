@@ -3,6 +3,7 @@
 """ Apply man fixes to the specified files. """
 
 import argparse
+import collections
 
 import fixes
 import lint
@@ -11,34 +12,36 @@ import man_file
 
 def do_lint(filenames):
     """ Apply lint checks to man pages. """
-    num_notify = 0
+    notify = collections.defaultdict(int)
     for filename in filenames:
         # Load.
         man = man_file.ManFile(filename)
 
         # Process.
-        if lint.check_spdx(man):
-            num_notify += 1
+        for check in lint.CHECKS:
+            if check(man):
+                notify[check.__name__] += 1
 
-    return num_notify
+    return notify
 
 
 def do_fixes(filenames):
     """ Apply fixes to man pages. """
-    num_notify = 0
+    notify = collections.defaultdict(int)
     for filename in filenames:
         # Load.
         man = man_file.ManFile(filename)
 
         # Process.
-        fixes.sort_seealso(man)
-        if man.is_modified():
-            num_notify += 1
+        for fix in fixes.FIXES:
+            fix(man)
+            if man.is_modified():
+                notify[fix.__name__] += 1
 
         # Save (if modified).
         man.save()
 
-    return num_notify
+    return notify
 
 
 def parse_args():
@@ -77,12 +80,15 @@ def main():
 
     # Do linting or fixes.
     if args.lint:
-        num_notify = do_lint(filenames)
+        notify = do_lint(filenames)
     else:
-        num_notify = do_fixes(filenames)
+        notify = do_fixes(filenames)
 
     # Print summary of issues.
-    print("Processed %i files, problems in %i" % (len(filenames), num_notify))
+    print("Processed %i files, problems in %i" % (
+          len(filenames), sum(notify.values())))
+    for key, value in notify.items():
+        print("\t%s:\t%i" % (key, value))
 
 
 if __name__ == "__main__":

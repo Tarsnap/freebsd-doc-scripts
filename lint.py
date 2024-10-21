@@ -41,3 +41,8 @@ def check_spdx(man):
             print("%s: SPDX line is after the license" % man.filename)
             return True
     return False
+
+
+CHECKS = [
+    check_spdx,
+]

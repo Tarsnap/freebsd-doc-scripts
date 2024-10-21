@@ -36,3 +36,8 @@ def sort_seealso(man):
     # Re-add commas as appropriate, then we're done.
     xrs[:-1] = ["%s ," % x for x in xrs[:-1]]
     man.replace_section("SEE ALSO", xrs + rem)
+
+
+FIXES = [
+    sort_seealso,
+]
