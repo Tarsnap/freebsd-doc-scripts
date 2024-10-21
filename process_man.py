@@ -9,6 +9,38 @@ import lint
 import man_file
 
 
+def do_lint(filenames):
+    """ Apply lint checks to man pages. """
+    num_notify = 0
+    for filename in filenames:
+        # Load.
+        man = man_file.ManFile(filename)
+
+        # Process.
+        if lint.check_spdx(man):
+            num_notify += 1
+
+    return num_notify
+
+
+def do_fixes(filenames):
+    """ Apply fixes to man pages. """
+    num_notify = 0
+    for filename in filenames:
+        # Load.
+        man = man_file.ManFile(filename)
+
+        # Process.
+        fixes.sort_seealso(man)
+        if man.is_modified():
+            num_notify += 1
+
+        # Save (if modified).
+        man.save()
+
+    return num_notify
+
+
 def parse_args():
     """ Parse the command-line arguments. """
     parser = argparse.ArgumentParser(
@@ -43,14 +75,14 @@ def main():
         with open(args.filenames_list, encoding="utf-8") as fp:
             filenames = fp.read().splitlines()
 
-    # Apply fixes to all those files.
-    for filename in filenames:
-        man = man_file.ManFile(filename)
-        if args.lint:
-            lint.check_spdx(man)
-        else:
-            fixes.sort_seealso(man)
-            man.save()
+    # Do linting or fixes.
+    if args.lint:
+        num_notify = do_lint(filenames)
+    else:
+        num_notify = do_fixes(filenames)
+
+    # Print summary of issues.
+    print("Processed %i files, problems in %i" % (len(filenames), num_notify))
 
 
 if __name__ == "__main__":
