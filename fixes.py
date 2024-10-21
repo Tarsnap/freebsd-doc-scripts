@@ -1,25 +1,22 @@
 """ Functions to fix issues in man pages. """
 
+import man_lines
+
 
 def sort_seealso(man):
     """ Sort the SEE ALSO section as expected by mandoc. """
     see_also = man.get_section("SEE ALSO")
+    if not see_also:
+        return
 
-    # Split into ".Xr" lines and any remaining ones.
-    # FIXME: assume that all ".Xr" lines come first.  This is true for
-    # the current set of files that `mandoc -T lint ...` warns about,
-    # but it's not true of every single (currently-ok) man in -CURRENT.
-    splitindex = None
-    for i, x in enumerate(see_also):
-        if not x.startswith(".Xr"):
-            splitindex = i
-            break
-    if splitindex:
-        xrs = see_also[:splitindex]
-        rem = see_also[splitindex:]
-    else:
-        xrs = see_also
-        rem = []
+    # Split into ".Xr" lines and any remaining ones.  Assume that there is
+    # a single block of ".Xr" lines.
+    ml = man_lines.ManLines(see_also)
+    xrs = ml.three_way_split(lambda x: x.startswith(".Xr"),
+                             lambda x: not x.startswith(".Xr"))
+    if not xrs:
+        print("%s: skipping, SEE ALSO does not contain any .Xr" % man.filename)
+        return
 
     # Strip commas (and periods, which shouldn't be in this section anyway!)
     xrs = [xr[:-2] if xr.endswith(" ,") else xr for xr in xrs]
@@ -35,7 +32,8 @@ def sort_seealso(man):
 
     # Re-add commas as appropriate, then we're done.
     xrs[:-1] = ["%s ," % x for x in xrs[:-1]]
-    man.replace_section("SEE ALSO", xrs + rem)
+    ml.replace_middle(xrs)
+    man.replace_section("SEE ALSO", ml)
 
 
 FIXES = [
