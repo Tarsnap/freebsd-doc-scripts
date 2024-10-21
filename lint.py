@@ -13,6 +13,7 @@ def lines_contain_index(lines, substr):
 
 def check_spdx(man):
     """ Check the location of any SPDX-License-Identifier line.
+        Return True if there was a problem discovered in this man page.
 
         If the full license is included, it should be before the license.
         If not, it should be after the copyright line.
@@ -22,18 +23,21 @@ def check_spdx(man):
     # Bail if there's no SPDX-License
     spdx_index = lines_contain_index(preamble, "SPDX-License")
     if spdx_index is None:
-        return
+        return False
 
     license_index = lines_contain_index(preamble, "Redistribution and use")
     if license_index is None:
         # Does not have license text; we want SPDX after copyright.
         copyright_index = lines_contain_index(preamble, "Copyright")
         if copyright_index is None:
-            return
+            return False
 
         if spdx_index < copyright_index:
             print("%s: SPDX line is before the copyright" % man.filename)
+            return True
     else:
         # Has full license text; we want SPDX before it.
         if spdx_index > license_index:
             print("%s: SPDX line is after the license" % man.filename)
+            return True
+    return False
