@@ -1,27 +1,21 @@
 """ Handle boilerplate for dealing with man files. """
 
+import man_lines
+
 
 class ManFile:
     """ A man page. """
     def __init__(self, filename):
         self.filename = filename
         self.lines = None
-        self.modified = False
-        self.section = {}
-        self._section_reset()
+        self.section_name = None
 
         with open(self.filename, encoding="utf-8") as fp:
-            self.lines = fp.read().splitlines()
-
-    def _section_reset(self):
-        self.section["name"] = None
-        self.section["before"] = []
-        self.section["middle"] = []
-        self.section["after"] = []
+            self.lines = man_lines.ManLines(fp.read().splitlines())
 
     def save(self):
         """ If it was modified, write the man page back to disk. """
-        if not self.modified:
+        if not self.lines.modified:
             return
 
         text = "\n".join(self.lines) + "\n"
@@ -30,7 +24,7 @@ class ManFile:
 
     def is_modified(self):
         """ Was the file modified? """
-        return self.modified
+        return self.lines.modified
 
     def get_preamble(self):
         """ Get the commented-out lines at the beginning of the file. """
@@ -48,34 +42,19 @@ class ManFile:
 
     def get_section(self, section_name):
         """ Get a section of the man page. """
-        self.section["name"] = section_name
+        self.section_name = section_name
 
-        state = 0
-        for line in self.lines:
-            if state == 0:
-                if line.startswith(".Sh %s" % section_name):
-                    state = 1
-                self.section["before"].append(line)
-            elif state == 1:
-                if line.startswith(".Sh "):
-                    state = 2
-                    self.section["after"].append(line)
-                else:
-                    self.section["middle"].append(line)
-            else:
-                self.section["after"].append(line)
+        middle = self.lines.three_way_split(
+            lambda x: x.startswith(".Sh %s" % section_name),
+            lambda x: x.startswith(".Sh "))
 
-        return self.section["middle"]
+        return middle
 
-    def replace_section(self, section_name, lines):
+    def replace_section(self, section_name, newlines):
         """ Replace a previously-extracted section.
             section_name must match the value given to get_section.
         """
         # Sanity check
-        assert section_name == self.section["name"]
+        assert section_name == self.section_name
 
-        if lines != self.section["middle"]:
-            self.modified = True
-
-        self.lines = self.section["before"] + lines + self.section["after"]
-        self._section_reset()
+        self.lines.replace_middle(newlines)
