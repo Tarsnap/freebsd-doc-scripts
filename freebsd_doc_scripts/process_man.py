@@ -5,9 +5,9 @@
 import argparse
 import collections
 
-import fixes
-import lint
-import man_file
+import freebsd_doc_scripts.fixes
+import freebsd_doc_scripts.lint
+import freebsd_doc_scripts.man_file
 
 
 def do_lint(filenames):
@@ -15,10 +15,10 @@ def do_lint(filenames):
     notify = collections.defaultdict(int)
     for filename in filenames:
         # Load.
-        man = man_file.ManFile(filename)
+        man = freebsd_doc_scripts.man_file.ManFile(filename)
 
         # Process.
-        for check in lint.CHECKS:
+        for check in freebsd_doc_scripts.lint.CHECKS:
             if check(man):
                 notify[check.__name__] += 1
 
@@ -30,10 +30,10 @@ def do_fixes(filenames):
     notify = collections.defaultdict(int)
     for filename in filenames:
         # Load.
-        man = man_file.ManFile(filename)
+        man = freebsd_doc_scripts.man_file.ManFile(filename)
 
         # Process.
-        for fix in fixes.FIXES:
+        for fix in freebsd_doc_scripts.fixes.FIXES:
             fix(man)
             if man.is_modified():
                 notify[fix.__name__] += 1

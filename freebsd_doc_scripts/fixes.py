@@ -1,6 +1,6 @@
 """ Functions to fix issues in man pages. """
 
-import man_lines
+import freebsd_doc_scripts.man_lines
 
 
 def sort_seealso(man):
@@ -11,7 +11,7 @@ def sort_seealso(man):
 
     # Split into ".Xr" lines and any remaining ones.  Assume that there is
     # a single block of ".Xr" lines.
-    ml = man_lines.ManLines(see_also)
+    ml = freebsd_doc_scripts.man_lines.ManLines(see_also)
     xrs = ml.three_way_split(lambda x: x.startswith(".Xr"),
                              lambda x: not x.startswith(".Xr"))
     if not xrs:

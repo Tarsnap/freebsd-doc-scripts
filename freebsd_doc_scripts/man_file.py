@@ -1,6 +1,6 @@
 """ Handle boilerplate for dealing with man files. """
 
-import man_lines
+import freebsd_doc_scripts.man_lines
 
 
 class ManFile:
@@ -11,7 +11,8 @@ class ManFile:
         self.section_name = None
 
         with open(self.filename, encoding="utf-8") as fp:
-            self.lines = man_lines.ManLines(fp.read().splitlines())
+            lines = fp.read().splitlines()
+            self.lines = freebsd_doc_scripts.man_lines.ManLines(lines)
 
     def save(self):
         """ If it was modified, write the man page back to disk. """
