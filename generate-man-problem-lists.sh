@@ -20,6 +20,7 @@ if [ ! -e man-pages.txt ]; then
 	git ls-files "*.[1-9]" --				\
 		":(exclude)contrib/"				\
 		":(exclude)crypto/"				\
+		":(exclude)secure/"				\
 		":(exclude)sys/cddl/"				\
 		":(exclude)sys/contrib/"			\
 		":(exclude)sys/crypto/"				\
@@ -28,6 +29,9 @@ if [ ! -e man-pages.txt ]; then
 		":(exclude)usr.bin/clang/"			\
 		":(exclude)usr.sbin/ntp/doc/ntp*"		\
 		":(exclude)usr.sbin/ntp/doc/sntp.8"		\
+								\
+		":(exclude)cddl/usr.bin/ctf*/"			\
+		":(exclude)cddl/usr.sbin/plockstat/"		\
 								\
 		":(exclude)bin/sh/tests/"			\
 		":(exclude)usr.bin/bmake/tests/"		\
