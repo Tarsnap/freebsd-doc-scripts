@@ -2,3 +2,6 @@
 /devel-tools/
 # Build output
 __pycache__
+# pip output
+/build/
+/freebsd_doc_scripts.egg-info/

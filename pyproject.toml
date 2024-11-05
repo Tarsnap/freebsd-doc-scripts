@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "freebsd_doc_scripts"
+version = "0.1"
+description = "Development tools for FreeBSD man pages"
+authors = [
+    { name="Graham Percival", email = "gperciva@tarsnap.com" },
+]
+readme = "README.md"
+
+[project.urls]
+repository = "http://github.com/Tarsnap/freebsd-doc-scripts"
+
+[project.scripts]
+process-man = "freebsd_doc_scripts.process_man:main"
+
+[tool.setuptools]
+script-files = [
+    "scripts/generate-man-problem-lists.sh",
+]
