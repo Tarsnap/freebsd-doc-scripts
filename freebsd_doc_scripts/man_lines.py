@@ -32,9 +32,9 @@ class ManLines(list):
         self.modified = False
         self.section = ManLinesSection(self)
 
-    def three_way_split(self, func_middle_index, func_end):
+    def three_way_split(self, func_middle, func_end):
         """ Split the lines into 3 lists:
-            1) before func_middle_index is true
+            1) before func_middle is true
             2) before func_end is true
             3) everything remaining
         """
@@ -44,7 +44,7 @@ class ManLines(list):
         state = 0
         for i, line in enumerate(self):
             if state == 0:
-                if func_middle_index(line):
+                if func_middle(line):
                     state = 1
                     self.section.middle_index = i
             elif state == 1:
