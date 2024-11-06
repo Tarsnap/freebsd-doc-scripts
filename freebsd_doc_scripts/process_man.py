@@ -25,7 +25,7 @@ def do_lint(filenames):
     return notify
 
 
-def do_fixes(filenames):
+def do_fixes(filenames, args):
     """ Apply fixes to man pages. """
     notify = collections.defaultdict(int)
     for filename in filenames:
@@ -39,7 +39,8 @@ def do_fixes(filenames):
                 notify[fix.__name__] += 1
 
         # Save (if modified).
-        man.save()
+        if not args.dry_run:
+            man.save()
 
     return notify
 
@@ -48,6 +49,8 @@ def parse_args():
     """ Parse the command-line arguments. """
     parser = argparse.ArgumentParser(
                  description="Fix some elements of man files")
+    parser.add_argument("--dry-run", action="store_true",
+                        help="Don't write any files to disk")
     parser.add_argument("--lint", action="store_true",
                         help="Run checks without fixing anything")
     parser.add_argument("-f", "--filenames-list",
@@ -82,7 +85,7 @@ def main():
     if args.lint:
         notify = do_lint(filenames)
     else:
-        notify = do_fixes(filenames)
+        notify = do_fixes(filenames, args)
 
     # Print summary of issues.
     print("Processed %i files, problems in %i" % (
