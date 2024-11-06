@@ -36,6 +36,6 @@ def sort_seealso(man, _args):
     man.replace_section("SEE ALSO", ml)
 
 
-FIXES = [
-    sort_seealso,
-]
+FIXES = {
+    "unusual Xr order": sort_seealso,
+}

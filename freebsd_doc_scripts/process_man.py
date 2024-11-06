@@ -33,10 +33,10 @@ def do_fixes(filenames, args):
         man = freebsd_doc_scripts.man_file.ManFile(filename)
 
         # Process.
-        for fix in freebsd_doc_scripts.fixes.FIXES:
-            fix(man, args)
+        for _, fix_func in freebsd_doc_scripts.fixes.FIXES.items():
+            fix_func(man, args)
             if man.is_modified():
-                notify[fix.__name__] += 1
+                notify[fix_func.__name__] += 1
 
         # Save (if modified).
         if not args.dry_run:
