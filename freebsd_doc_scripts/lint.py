@@ -11,7 +11,7 @@ def lines_contain_index(lines, substr):
     return index
 
 
-def check_spdx(man):
+def check_spdx(man, _args):
     """ Check the location of any SPDX-License-Identifier line.
         Return True if there was a problem discovered in this man page.
 

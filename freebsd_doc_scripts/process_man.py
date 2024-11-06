@@ -10,7 +10,7 @@ import freebsd_doc_scripts.lint
 import freebsd_doc_scripts.man_file
 
 
-def do_lint(filenames):
+def do_lint(filenames, args):
     """ Apply lint checks to man pages. """
     notify = collections.defaultdict(int)
     for filename in filenames:
@@ -19,7 +19,7 @@ def do_lint(filenames):
 
         # Process.
         for check in freebsd_doc_scripts.lint.CHECKS:
-            if check(man):
+            if check(man, args):
                 notify[check.__name__] += 1
 
     return notify
@@ -34,7 +34,7 @@ def do_fixes(filenames, args):
 
         # Process.
         for fix in freebsd_doc_scripts.fixes.FIXES:
-            fix(man)
+            fix(man, args)
             if man.is_modified():
                 notify[fix.__name__] += 1
 
@@ -49,6 +49,8 @@ def parse_args():
     """ Parse the command-line arguments. """
     parser = argparse.ArgumentParser(
                  description="Fix some elements of man files")
+    parser.add_argument("--debug", action="store_true",
+                        help="Print additional info (certain lints or fixes)")
     parser.add_argument("--dry-run", action="store_true",
                         help="Don't write any files to disk")
     parser.add_argument("--lint", action="store_true",
@@ -83,7 +85,7 @@ def main():
 
     # Do linting or fixes.
     if args.lint:
-        notify = do_lint(filenames)
+        notify = do_lint(filenames, args)
     else:
         notify = do_fixes(filenames, args)
 
