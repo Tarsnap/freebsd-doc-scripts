@@ -43,6 +43,6 @@ def check_spdx(man, _args):
     return False
 
 
-CHECKS = [
-    check_spdx,
-]
+CHECKS = {
+    "check_spdx": check_spdx,
+}

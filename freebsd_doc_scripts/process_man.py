@@ -10,33 +10,25 @@ import freebsd_doc_scripts.lint
 import freebsd_doc_scripts.man_file
 
 
-def do_lint(filenames, args):
-    """ Apply lint checks to man pages. """
+def _apply_funcs(man, args, notify, funcs_dict):
+    """ Run functions from func_dict on the man page. """
+    for _, func in funcs_dict.items():
+        if func(man, args) or man.is_modified():
+            notify[func.__name__] += 1
+
+
+def process(filenames, args, funcs_dict):
+    """ Run functions from funcs_dict on the indicated files, save the
+        modified file(s) (if applicable), and return a summary of the
+        results.
+    """
     notify = collections.defaultdict(int)
     for filename in filenames:
         # Load.
         man = freebsd_doc_scripts.man_file.ManFile(filename)
 
         # Process.
-        for check in freebsd_doc_scripts.lint.CHECKS:
-            if check(man, args):
-                notify[check.__name__] += 1
-
-    return notify
-
-
-def do_fixes(filenames, args):
-    """ Apply fixes to man pages. """
-    notify = collections.defaultdict(int)
-    for filename in filenames:
-        # Load.
-        man = freebsd_doc_scripts.man_file.ManFile(filename)
-
-        # Process.
-        for _, fix_func in freebsd_doc_scripts.fixes.FIXES.items():
-            fix_func(man, args)
-            if man.is_modified():
-                notify[fix_func.__name__] += 1
+        _apply_funcs(man, args, notify, funcs_dict)
 
         # Save (if modified).
         if not args.dry_run:
@@ -85,9 +77,10 @@ def main():
 
     # Do linting or fixes.
     if args.lint:
-        notify = do_lint(filenames, args)
+        funcs_dict = freebsd_doc_scripts.lint.CHECKS
     else:
-        notify = do_fixes(filenames, args)
+        funcs_dict = freebsd_doc_scripts.fixes.FIXES
+    notify = process(filenames, args, funcs_dict)
 
     # Print summary of issues.
     print("Processed %i files, problems in %i" % (
