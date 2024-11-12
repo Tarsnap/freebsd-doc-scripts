@@ -8,27 +8,45 @@ import collections
 import freebsd_doc_scripts.fixes
 import freebsd_doc_scripts.lint
 import freebsd_doc_scripts.man_file
+import freebsd_doc_scripts.mandoc_lint_output
 
 
-def _apply_funcs(man, args, notify, funcs_dict):
-    """ Run functions from func_dict on the man page. """
-    for _, func in funcs_dict.items():
-        if func(man, args) or man.is_modified():
-            notify[func.__name__] += 1
+def _apply_funcs(man, args, notify, mlos, funcs_dict):
+    """ Run (some) functions from func_dict on the man page.  If mlos is
+        None, then run all the functions; otherwise, only run the
+        functions(s) which correspond to messages in mlos.
+    """
+    for fix_msg, func in funcs_dict.items():
+        if mlos is None:
+            if func(man, args) or man.is_modified():
+                notify[func.__name__] += 1
+        else:
+            # If we have mandoc, then only run those specific fixes.
+            for mlo in mlos:
+                if mlo.message.startswith(fix_msg):
+                    if func(man, args) or man.is_modified():
+                        notify[func.__name__] += 1
 
 
-def process(filenames, args, funcs_dict):
-    """ Run functions from funcs_dict on the indicated files, save the
+def process(filenames, args, mlos, funcs_dict):
+    """ Run (some) functions from funcs_dict on the indicated files, save the
         modified file(s) (if applicable), and return a summary of the
-        results.
+        results.  If mlos is None, run all the functions; otherwise, only
+        run the functions(s) which correspond to messages in mlos.
     """
     notify = collections.defaultdict(int)
     for filename in filenames:
         # Load.
         man = freebsd_doc_scripts.man_file.ManFile(filename)
 
+        # Get the relevant mandoc lint outputs.
+        if mlos is None:
+            relevant_mlos = None
+        else:
+            relevant_mlos = [mlo for mlo in mlos if mlo.filename == filename]
+
         # Process.
-        _apply_funcs(man, args, notify, funcs_dict)
+        _apply_funcs(man, args, notify, relevant_mlos, funcs_dict)
 
         # Save (if modified).
         if not args.dry_run:
@@ -49,16 +67,22 @@ def parse_args():
                         help="Run checks without fixing anything")
     parser.add_argument("-f", "--filenames-list",
                         help="A file containing a list of man pages to fix")
+    parser.add_argument("--mandoc-lint-output",
+                        help="A file containing lint output from mandoc")
     parser.add_argument("filenames", nargs="*",
                         help="Specific man files to fix")
     args = parser.parse_args()
 
-    # Sanity checks
-    if args.filenames and args.filenames_list:
+    # Sanity checks: exactly one set of filenames.
+    num_args_filenames = ((len(args.filenames) > 0) +
+                          (args.filenames_list is not None) +
+                          (args.mandoc_lint_output is not None))
+    if num_args_filenames > 1:
         print("Cannot specify -f and filenames on the command line")
         exit(1)
-    if not args.filenames and not args.filenames_list:
-        print("Must specify one -f or filenames on the command line")
+    if num_args_filenames == 0:
+        print("Must specify one -f, --mandoc-lint-output, or filenames"
+              " on the command line")
         exit(1)
 
     return args
@@ -67,9 +91,14 @@ def parse_args():
 def main():
     """ Apply man fixes to the specified files. """
     args = parse_args()
+    mlos = None
 
     # Get the list of filenames from the appropriate location.
-    if args.filenames:
+    if args.mandoc_lint_output:
+        mlos = freebsd_doc_scripts.mandoc_lint_output.parse(
+            args.mandoc_lint_output)
+        filenames = sorted({m.filename for m in mlos})
+    elif args.filenames:
         filenames = args.filenames
     else:
         with open(args.filenames_list, encoding="utf-8") as fp:
@@ -80,7 +109,7 @@ def main():
         funcs_dict = freebsd_doc_scripts.lint.CHECKS
     else:
         funcs_dict = freebsd_doc_scripts.fixes.FIXES
-    notify = process(filenames, args, funcs_dict)
+    notify = process(filenames, args, mlos, funcs_dict)
 
     # Print summary of issues.
     print("Processed %i files, problems in %i" % (
