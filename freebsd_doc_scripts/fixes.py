@@ -52,8 +52,19 @@ def pp_after(man, _args, mlo=None):
     man.remove_line(index)
 
 
+def fix_backslashes(man, _args, _mlo=None):
+    """ Fix incorrectly-written backslashes. """
+    for i, line in enumerate(man.lines):
+        if "\\\\" in line:
+            newline = line.replace("\\\\", "\\e")
+            man.replace_line(i, newline)
+
+
 FIXES = {
     "unusual Xr order": sort_seealso,
     "skipping paragraph macro: PP after SS": pp_after,
     "skipping paragraph macro: PP after SH": pp_after,
+
+    # This isn't a mandoc lint message.
+    "backslashes": fix_backslashes,
 }
