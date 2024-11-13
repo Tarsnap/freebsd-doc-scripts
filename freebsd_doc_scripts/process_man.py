@@ -24,7 +24,7 @@ def _apply_funcs(man, args, notify, mlos, funcs_dict):
             # If we have mandoc, then only run those specific fixes.
             for mlo in mlos:
                 if mlo.message.startswith(fix_msg):
-                    if func(man, args) or man.is_modified():
+                    if func(man, args, mlo) or man.is_modified():
                         notify[func.__name__] += 1
 
 

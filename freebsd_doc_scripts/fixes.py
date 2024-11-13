@@ -3,7 +3,7 @@
 import freebsd_doc_scripts.man_lines
 
 
-def sort_seealso(man, _args):
+def sort_seealso(man, _args, _mlo=None):
     """ Sort the SEE ALSO section as expected by mandoc. """
     see_also = man.get_section("SEE ALSO")
     if not see_also:
