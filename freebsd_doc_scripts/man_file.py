@@ -23,6 +23,11 @@ class ManFile:
         with open(self.filename, "w", encoding="utf-8") as fp:
             fp.write(text)
 
+    def clear_section(self):
+        """ Clear any in-use sections. """
+        self.lines.clear_section()
+        self.section_name = None
+
     def is_modified(self):
         """ Was the file modified? """
         return self.lines.modified

@@ -33,6 +33,10 @@ class ManLines(list):
         self.section = ManLinesSection(self)
         self.num_removed_lines = 0
 
+    def clear_section(self):
+        """ Clear any in-use sections. """
+        self.section.reset()
+
     def three_way_split(self, func_middle, func_end):
         """ Split the lines into 3 lists:
             1) before func_middle is true

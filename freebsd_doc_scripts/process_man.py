@@ -20,6 +20,7 @@ def _apply_funcs(man, args, notify, mlos, funcs_dict):
         for fix_msg, func in funcs_dict.items():
             if func(man, args) or man.is_modified():
                 notify[func.__name__] += 1
+            man.clear_section()
         return
 
     # Sort mlos by line number: if any fixes remove a line, we need to
@@ -32,6 +33,7 @@ def _apply_funcs(man, args, notify, mlos, funcs_dict):
             if mlo.message.startswith(fix_msg):
                 if func(man, args, mlo) or man.is_modified():
                     notify[func.__name__] += 1
+                man.clear_section()
 
 
 def process(filenames, args, mlos, funcs_dict):
