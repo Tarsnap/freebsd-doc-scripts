@@ -59,3 +59,14 @@ class ManFile:
         assert section_name == self.section_name
 
         self.lines.replace_middle(newlines)
+
+    def remove_line(self, index):
+        """ Remove a line. """
+        # Sanity check
+        assert self.section_name is None
+
+        self.lines.remove_line(index)
+
+    def get_num_removed_lines(self):
+        """ Get the number of lines that were removed. """
+        return self.lines.num_removed_lines

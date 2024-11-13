@@ -31,6 +31,7 @@ class ManLines(list):
         super().__init__(lines)
         self.modified = False
         self.section = ManLinesSection(self)
+        self.num_removed_lines = 0
 
     def three_way_split(self, func_middle, func_end):
         """ Split the lines into 3 lists:
@@ -73,3 +74,11 @@ class ManLines(list):
         self.modified = True
 
         self.section.reset()
+
+    def remove_line(self, index):
+        """ Remove a line. """
+        assert self.section.in_use is False
+
+        self.pop(index)
+        self.modified = True
+        self.num_removed_lines += 1
