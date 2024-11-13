@@ -44,6 +44,10 @@ def process(filenames, args, mlos, funcs_dict):
     """
     notify = collections.defaultdict(int)
     for filename in filenames:
+        # Bail if we've acted on enough files.
+        if args.max_files > 0 and sum(notify.values()) >= args.max_files:
+            break
+
         # Load.
         man = freebsd_doc_scripts.man_file.ManFile(filename)
 
@@ -73,6 +77,8 @@ def parse_args():
                         help="Don't write any files to disk")
     parser.add_argument("--lint", action="store_true",
                         help="Run checks without fixing anything")
+    parser.add_argument("--max-files", type=int, default=0,
+                        help="Maximum number of files to fix")
     parser.add_argument("-f", "--filenames-list",
                         help="A file containing a list of man pages to fix")
     parser.add_argument("--mandoc-lint-output",
