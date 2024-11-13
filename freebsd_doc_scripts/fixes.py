@@ -36,6 +36,24 @@ def sort_seealso(man, _args, _mlo=None):
     man.replace_section("SEE ALSO", ml)
 
 
+def pp_after(man, _args, mlo=None):
+    """ Remove an incorrect .PP macro.  Requires mandoc lint output. """
+    # Bail if we don't have mandoc_lint_output.
+    if mlo is None:
+        return
+
+    # Adjust the line number to account for any previously-remove lines.
+    index = mlo.line_number - 1 - man.get_num_removed_lines()
+
+    # Sanity check.  (.LP is a synonym of PP)
+    assert man.lines[index] == ".PP" or man.lines[index] == ".LP"
+
+    # Remove the line that mandoc reported as a problem.
+    man.remove_line(index)
+
+
 FIXES = {
     "unusual Xr order": sort_seealso,
+    "skipping paragraph macro: PP after SS": pp_after,
+    "skipping paragraph macro: PP after SH": pp_after,
 }
