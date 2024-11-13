@@ -86,3 +86,11 @@ class ManLines(list):
         self.pop(index)
         self.modified = True
         self.num_removed_lines += 1
+
+    def replace_line(self, index, newline):
+        """ Replace a line. """
+        # Sanity check
+        assert self.section.in_use is False
+
+        self[index] = newline
+        self.modified = True

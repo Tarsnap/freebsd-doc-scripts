@@ -72,6 +72,13 @@ class ManFile:
 
         self.lines.remove_line(index)
 
+    def replace_line(self, index, newline):
+        """ Replace a line. """
+        # Sanity check
+        assert self.section_name is None
+
+        self.lines.replace_line(index, newline)
+
     def get_num_removed_lines(self):
         """ Get the number of lines that were removed. """
         return self.lines.num_removed_lines
