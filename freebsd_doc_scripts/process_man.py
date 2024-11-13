@@ -16,16 +16,22 @@ def _apply_funcs(man, args, notify, mlos, funcs_dict):
         None, then run all the functions; otherwise, only run the
         functions(s) which correspond to messages in mlos.
     """
-    for fix_msg, func in funcs_dict.items():
-        if mlos is None:
+    if mlos is None:
+        for fix_msg, func in funcs_dict.items():
             if func(man, args) or man.is_modified():
                 notify[func.__name__] += 1
-        else:
-            # If we have mandoc, then only run those specific fixes.
-            for mlo in mlos:
-                if mlo.message.startswith(fix_msg):
-                    if func(man, args, mlo) or man.is_modified():
-                        notify[func.__name__] += 1
+        return
+
+    # Sort mlos by line number: if any fixes remove a line, we need to
+    # do those in order.
+    mlos = sorted(mlos, key=lambda x: x.line_number)
+
+    for mlo in mlos:
+        for fix_msg, func in funcs_dict.items():
+            # Only run the specific fixes mentioned in mlo.
+            if mlo.message.startswith(fix_msg):
+                if func(man, args, mlo) or man.is_modified():
+                    notify[func.__name__] += 1
 
 
 def process(filenames, args, mlos, funcs_dict):
