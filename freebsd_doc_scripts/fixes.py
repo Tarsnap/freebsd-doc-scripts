@@ -43,7 +43,7 @@ def pp_after(man, _args, mlo=None):
         return
 
     # Adjust the line number to account for any previously-remove lines.
-    index = mlo.line_number - 1 - man.get_num_removed_lines()
+    index = mlo.line_number - 1 + man.get_line_delta_count()
 
     # Sanity check.  (.LP is a synonym of PP)
     assert man.lines[index] == ".PP" or man.lines[index] == ".LP"

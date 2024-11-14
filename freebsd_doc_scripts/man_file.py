@@ -79,6 +79,10 @@ class ManFile:
 
         self.lines.replace_line(index, newline)
 
-    def get_num_removed_lines(self):
-        """ Get the number of lines that were removed. """
-        return self.lines.num_removed_lines
+    def get_line_delta_count(self):
+        """ Get the difference between current and original line numbers.
+
+            For example, if one line was removed, this would return -1;
+            if three lines were then added, this would return 2.
+        """
+        return self.lines.line_delta_count

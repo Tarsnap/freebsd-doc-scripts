@@ -31,7 +31,7 @@ class ManLines(list):
         super().__init__(lines)
         self.modified = False
         self.section = ManLinesSection(self)
-        self.num_removed_lines = 0
+        self.line_delta_count = 0
 
     def clear_section(self):
         """ Clear any in-use sections. """
@@ -85,7 +85,7 @@ class ManLines(list):
 
         self.pop(index)
         self.modified = True
-        self.num_removed_lines += 1
+        self.line_delta_count -= 1
 
     def replace_line(self, index, newline):
         """ Replace a line. """
