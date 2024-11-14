@@ -18,6 +18,11 @@ def _apply_funcs(man, args, notify, mlos, funcs_dict):
     """
     if mlos is None:
         for fix_msg, func in funcs_dict.items():
+            # Skip funcs if the message begins with an underscore
+            if fix_msg.startswith("_"):
+                continue
+
+            # Apply the function.
             if func(man, args) or man.is_modified():
                 notify[func.__name__] += 1
             man.clear_section()
@@ -29,6 +34,10 @@ def _apply_funcs(man, args, notify, mlos, funcs_dict):
 
     for mlo in mlos:
         for fix_msg, func in funcs_dict.items():
+            # Skip funcs if the message begins with an underscore
+            if fix_msg.startswith("_"):
+                continue
+
             # Only run the specific fixes mentioned in mlo.
             if mlo.message.startswith(fix_msg):
                 if func(man, args, mlo) or man.is_modified():
