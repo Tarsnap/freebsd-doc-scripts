@@ -66,5 +66,5 @@ FIXES = {
     "skipping paragraph macro: PP after SH": pp_after,
 
     # This isn't a mandoc lint message.
-    "backslashes": fix_backslashes,
+    "_backslashes": fix_backslashes,
 }
