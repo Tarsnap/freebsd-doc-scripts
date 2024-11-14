@@ -87,6 +87,15 @@ class ManLines(list):
         self.modified = True
         self.line_delta_count -= 1
 
+    def insert_line(self, index, newline):
+        """ Insert a line at index. """
+        # Sanity check
+        assert self.section.in_use is False
+
+        self.insert(index, newline)
+        self.modified = True
+        self.line_delta_count += 1
+
     def replace_line(self, index, newline):
         """ Replace a line. """
         # Sanity check

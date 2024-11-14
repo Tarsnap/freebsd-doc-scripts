@@ -72,6 +72,13 @@ class ManFile:
 
         self.lines.remove_line(index)
 
+    def insert_line(self, index, newline):
+        """ Insert a line at index. """
+        # Sanity check
+        assert self.section_name is None
+
+        self.lines.insert_line(index, newline)
+
     def replace_line(self, index, newline):
         """ Replace a line. """
         # Sanity check
